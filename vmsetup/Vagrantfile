@@ -1,0 +1,42 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+$provision_install_docker= <<SCRIPT
+echo Installing Docker
+sudo apt-get update -qq
+sudo apt-get install -qq python-pip apt-transport-https ca-certificates curl gnupg2 software-properties-common
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
+sudo apt-get update -qq
+sudo apt-get install -qq docker-ce
+sudo usermod -aG docker vagrant
+
+# Install docker-compose
+echo Installing Docker Compose
+sudo curl -s -L "https://github.com/docker/compose/releases/download/1.25.0/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+sudo chmod +x /usr/local/bin/docker-compose
+SCRIPT
+
+$provision_install_ctfd= <<SCRIPT
+echo Cloning CTFd
+git clone -q https://github.com/CTFd/CTFd.git
+echo Building CTFd
+cd CTFd 
+sudo docker-compose up -d
+SCRIPT
+
+Vagrant.configure("2") do |config|
+  config.vm.box = "bento/ubuntu-16.04"
+
+  # Create a private network, which allows host-only access to the machine
+  config.vm.network "private_network", ip: "10.9.8.7"
+
+  # Forward the default port for the development server (4000)
+  # and docker or gunicorn (8000) to host machine
+  config.vm.network "forwarded_port", guest: 4000, host: 4000
+  config.vm.network "forwarded_port", guest: 8000, host: 8000
+
+  config.vm.provision "shell", inline: $provision_install_docker
+  config.vm.provision "shell", privileged: false, inline: $provision_install_ctfd
+
+end

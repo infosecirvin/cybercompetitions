@@ -1,0 +1,15 @@
+FROM debian:latest
+
+# Install stuff
+RUN apt update && apt install dirmngr -y
+
+# Remove sources.list and replace
+RUN rm -rf /etc/apt/sources.list && echo "deb http://http.kali.org/kali kali-rolling main non-free contrib" >> /etc/apt/sources.list
+
+# Add the Kali key
+RUN apt-key adv --keyserver hkp://keys.gnupg.net --recv-keys 7D8D0BF6 && apt update && apt dist-upgrade -y
+
+# Install kali stuff
+#RUN apt install kali-linux-default -y && apt install apache2 && systemctl enable apache2
+
+CMD ["/bin/bash"]
