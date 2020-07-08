@@ -1,6 +1,7 @@
 #!/bin/bash
 #CTFd Install and Configuration Script
 #Created by Jacobs Otto and Irvin Lemus
+#Updated by Ryan Garcia, Janelly Servin and Brandon Pimentel.
 
 CTF_NAME="CTFd"
 
@@ -26,12 +27,12 @@ cd CTFd;
 #Uncomment if you want to edit the config file.
 #vim CTFd/config.py;
 
-cat > /home/CTFd/CTFd/start.sh <<EOF
+cat > /home/CTFd/CTFd/start.sh <<EOL
 cd /home/CTFd/CTFd
 service nginx start
 nohup gunicorn -c gunicorn.cfg "CTFd:create_app()"&
-EOF
-cat > /home/CTFd/CTFd/gunicorn.cfg <<EOF
+EOL
+cat > /home/CTFd/CTFd/gunicorn.cfg <<EOL
 import multiprocessing
 
 bind = "0.0.0.0:8000"
@@ -41,7 +42,7 @@ worker_class = "gevent"
 worker_connections = 400
 timeout = 30
 keepalive = 2
-EOF
+EOL
 chmod +x start.sh
 #Adding Postgres SQL
 #pw=$(head /dev/urandom | md5sum)
@@ -61,7 +62,7 @@ ufw allow 'Nginx HTTPS';
 
 #Nginx Configuration
 rm /etc/nginx/nginx.conf
-cat > /etc/nginx/nginx.conf <<EOF
+cat > /etc/nginx/nginx.conf <<EOL
 user www-data;
 worker_processes 4;
 pid /run/nginx.pid;
@@ -154,9 +155,9 @@ http {
 #           	proxy  	on;
 #   	}
 #}
-EOF
+EOL
 
-cat > /etc/nginx/sites-available/CTFd <<EOF
+cat > /etc/nginx/sites-available/CTFd <<EOL
 proxy_cache_path /home/CTFd/nginxCache levels=1:2 keys_zone=my_cache:10m max_size=8g
              	inactive=10m use_temp_path=off;
 server {
@@ -181,7 +182,7 @@ server {
     	proxy_pass http://localhost:8000;
     	}
  }
-EOF
+EOL
 rm /etc/nginx/sites-enabled/default
 ln -s /etc/nginx/sites-available/CTFd /etc/nginx/sites-enabled/default
 
@@ -189,9 +190,10 @@ ln -s /etc/nginx/sites-available/CTFd /etc/nginx/sites-enabled/default
 nohup /home/CTFd/CTFd/start.sh
 sleep 10
 nohup /home/CTFd/CTFd/start.sh &
-add-apt-repository ppa:certbot/certbot -y;
+apt-get install software-properties-common -y;
+add-apt-repository universe;
 apt update;
-apt install certbot python-certbot-nginx -y;
+apt-get install certbot python3-certbot-nginx -y;
 certbot --nginx certonly
 sed -i '11i\         ssl_certificate /etc/letsencrypt/live/'$dns'/fullchain.pem;\' /etc/nginx/sites-available/CTFd
 sed -i '12i\         ssl_certificate_key /etc/letsencrypt/live/'$dns'/privkey.pem;\' /etc/nginx/sites-available/CTFd
@@ -199,14 +201,14 @@ sed -i '13i\         include /etc/letsencrypt/options-ssl-nginx.conf;\' /etc/ngi
 /etc/init.d/nginx restart
 
 #Create File to run CTFd at boot
-cat > /home/CTFd/CTFd/cron.sh <<EOF
+cat > /home/CTFd/CTFd/cron.sh <<EOL
 #!/bin/bash
 #Setup persistence for CTFd.
 CTF_NAME="CTFd"
 cd /etc/cron.d/;
 echo -e "SHELL=/bin/sh" > $CTF_NAME;
 echo -e "PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin" >> $CTF_NAME;
-EOF
+EOL
 chmod +x cron.sh && ./cron.sh;
 echo "########################################################################"
 echo "CTFd is ready"
@@ -216,7 +218,7 @@ echo "########################################################################"
 
 function http {
 #Create File to run CTFd at boot
-cat > /home/CTFd/CTFd/gunicorn.cfg <<EOF
+cat > /home/CTFd/CTFd/gunicorn.cfg <<EOL
 import multiprocessing
 
 bind = "0.0.0.0:80"
@@ -226,16 +228,16 @@ worker_class = "gevent"
 worker_connections = 400
 timeout = 30
 keepalive = 2
-EOF
+EOL
 
-cat > /home/CTFd/CTFd/cron.sh <<EOF
+cat > /home/CTFd/CTFd/cron.sh <<EOL
 #!/bin/bash
 #Setup persistence for CTFd.
 CTF_NAME="CTFd"
 cd /etc/cron.d/;
 echo -e "SHELL=/bin/sh" > $CTF_NAME;
 echo -e "PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin" >> $CTF_NAME;
-EOF
+EOL
 
 chmod +x cron.sh && ./cron.sh;
 nohup /home/CTFd/CTFd/start.sh
