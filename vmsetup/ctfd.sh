@@ -12,17 +12,60 @@ if [[ $EUID -ne 0 ]]; then
 fi
 
 function setup {
-#Perform updates and upgrades (upgrade isn't that important).
-apt update && apt upgrade -y
+#Perform updates
+add-apt-repository universe
+apt update
 
 #Setup CTFd home.
 mkdir /home/CTFd;
 cd /home/CTFd;
 
 #Get CTFd.
-git clone https://github.com/CTFd/CTFd.git;
-cd CTFd;
-./prepare.sh;
+git clone https://github.com/CTFd/CTFd.git
+cd CTFd
+cat > /home/CTFd/CTFd/prepare.sh <<EOL
+#!/bin/sh
+sudo apt-get update
+sudo DEBIAN_FRONTEND=noninteractive apt-get install -y build-essential \
+python3-dev python3-pip libffi-dev software-properties-common 
+pip3 install -r requirements.txt
+EOL
+
+cat > /home/CTFd/CTFd/requirements.txt <<EOL
+Flask==1.1.2
+Werkzeug==1.0.1
+Flask-SQLAlchemy==2.4.3
+Flask-Caching==1.8.0
+Flask-Migrate==2.5.3
+Flask-Script==2.0.6
+SQLAlchemy==1.3.17
+SQLAlchemy-Utils==0.36.6
+passlib==1.7.2
+bcrypt==3.1.7
+itsdangerous==1.1.0
+requests==2.23.0
+PyMySQL==0.9.3
+gunicorn==20.0.4
+dataset==1.3.1
+cmarkgfm==0.4.2
+redis==3.5.2
+gevent==20.5.2
+python-dotenv==0.13.0
+flask-restx==0.2.0
+flask-marshmallow==0.10.1
+marshmallow-sqlalchemy==0.17.0
+boto3==1.13.9
+marshmallow==2.20.2
+pydantic==1.5.1
+lxml==4.5.1
+html5lib==1.0.1
+WTForms==2.3.1
+python-geoacumen==0.0.1
+maxminddb==1.5.4
+EOL
+
+apt-get update
+./prepare.sh
 
 #Uncomment if you want to edit the config file.
 #vim CTFd/config.py;
@@ -157,20 +200,28 @@ http {
 #}
 EOL
 
+
+#Install certbot.
+nohup /home/CTFd/CTFd/start.sh
+sleep 10
+nohup /home/CTFd/CTFd/start.sh &
+apt-get install certbot python3-certbot-nginx -y;
+certbot --nginx --register-unsafely-without-email --agree-tos --no-redirect -d $dns
 cat > /etc/nginx/sites-available/CTFd <<EOL
 proxy_cache_path /home/CTFd/nginxCache levels=1:2 keys_zone=my_cache:10m max_size=8g
              	inactive=10m use_temp_path=off;
 server {
     	listen 80 default_server;
+    	listen [::]:80 default_server;
     	server_name _;
-    	return 301 https://$host$request_uri;
+    	return 301 https://$dns$request_uri;
 }
 
 server {
     	listen 443 ssl;
-    	#ssl_certificate /etc/letsencrypt/live/YOURCTFDOMAIN.DOMAIN/fullchain.pem;
-    	#ssl_certificate_key /etc/letsencrypt/live/YOURCTFDOMAIN.DOMAIN/privkey.pem;
-    	#include /etc/letsencrypt/options-ssl-nginx.conf;
+    	ssl_certificate /etc/letsencrypt/live/$dns/fullchain.pem;
+    	ssl_certificate_key /etc/letsencrypt/live/$dns/privkey.pem;
+    	include /etc/letsencrypt/options-ssl-nginx.conf;
     	server_name CTFd;
     	location = /favicon.ico { access_log off; log_not_found off; }
  location /static/ {
@@ -185,19 +236,6 @@ server {
 EOL
 rm /etc/nginx/sites-enabled/default
 ln -s /etc/nginx/sites-available/CTFd /etc/nginx/sites-enabled/default
-
-#Install certbot.
-nohup /home/CTFd/CTFd/start.sh
-sleep 10
-nohup /home/CTFd/CTFd/start.sh &
-apt-get install software-properties-common -y;
-add-apt-repository universe;
-apt update;
-apt-get install certbot python3-certbot-nginx -y;
-certbot --nginx certonly
-sed -i '11i\         ssl_certificate /etc/letsencrypt/live/'$dns'/fullchain.pem;\' /etc/nginx/sites-available/CTFd
-sed -i '12i\         ssl_certificate_key /etc/letsencrypt/live/'$dns'/privkey.pem;\' /etc/nginx/sites-available/CTFd
-sed -i '13i\         include /etc/letsencrypt/options-ssl-nginx.conf;\' /etc/nginx/sites-available/CTFd
 /etc/init.d/nginx restart
 
 #Create File to run CTFd at boot
