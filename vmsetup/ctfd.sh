@@ -63,6 +63,7 @@ WTForms==2.3.1
 python-geoacumen==0.0.1
 maxminddb==1.5.4
 tenacity==6.2.0
+greenlet==0.4.16
 EOL
 
 apt-get update
