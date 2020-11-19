@@ -26,7 +26,7 @@ git clone https://github.com/CTFd/CTFd.git
 cd CTFd
 
 apt-get update
-apt-get install -y build-essential python-dev python-pip libffi-dev
+apt-get install -y build-essential python-dev python-pip libffi-dev python3 python3-pip
 pip3 install -r requirements.in
 
 #Uncomment if you want to edit the config file.
