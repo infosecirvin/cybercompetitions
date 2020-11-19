@@ -14,7 +14,8 @@ fi
 function setup {
 #Perform updates
 apt-get update -qq
-apt-get install -qq -y build-essential git ufw libffi-dev python3-dev python3-pip
+apt-get install -qq -y build-essential git ufw libffi-dev \
+python3-dev python3-pip software-properties-common
 
 #Setup CTFd home.
 mkdir /home/CTFd;
