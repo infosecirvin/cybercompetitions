@@ -18,8 +18,8 @@ apt-get install -qq -y build-essential git ufw libffi-dev \
 python3-dev python3-pip software-properties-common
 
 #Setup CTFd home.
-mkdir /home/CTFd;
-cd /home/CTFd;
+mkdir /home/CTFd
+cd /home/CTFd
 
 #Get CTFd.
 git clone https://github.com/CTFd/CTFd.git
@@ -57,10 +57,10 @@ chmod +x start.sh
 
 function https {
 #Install nginx.
-apt-get -qq -y install nginx;
-ufw allow 'Nginx Full';
-ufw allow 'Nginx HTTP';
-ufw allow 'Nginx HTTPS';
+apt-get -qq -y install nginx
+ufw allow 'Nginx Full'
+ufw allow 'Nginx HTTP'
+ufw allow 'Nginx HTTPS'
 
 #Nginx Configuration
 rm /etc/nginx/nginx.conf
