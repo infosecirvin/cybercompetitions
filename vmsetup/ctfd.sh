@@ -13,7 +13,7 @@ fi
 
 function setup {
 #Perform updates
-DEBIAN_FRONTEND=noninteractive
+#DEBIAN_FRONTEND=noninteractive
 add-apt-repository universe
 apt-get update -qq
 
