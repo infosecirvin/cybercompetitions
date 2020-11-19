@@ -18,8 +18,8 @@ apt-get install -qq -y build-essential git ufw libffi-dev \
 python3-dev python3-pip software-properties-common
 
 #Setup CTFd home.
-mkdir /home/CTFd;
-cd /home/CTFd;
+mkdir /home/CTFd
+cd /home/CTFd
 
 #Get CTFd.
 git clone https://github.com/CTFd/CTFd.git
@@ -57,10 +57,10 @@ chmod +x start.sh
 
 function https {
 #Install nginx.
-apt-get -qq -y install nginx;
-ufw allow 'Nginx Full';
-ufw allow 'Nginx HTTP';
-ufw allow 'Nginx HTTPS';
+apt-get -qq -y install nginx
+ufw allow 'Nginx Full'
+ufw allow 'Nginx HTTP'
+ufw allow 'Nginx HTTPS'
 
 #Nginx Configuration
 rm /etc/nginx/nginx.conf
@@ -164,7 +164,7 @@ EOL
 nohup /home/CTFd/CTFd/start.sh
 sleep 10
 nohup /home/CTFd/CTFd/start.sh &
-apt-get install -qq -y certbot python3-certbot-nginx;
+apt-get install -qq -y certbot python3-certbot-nginx
 certbot --nginx --register-unsafely-without-email --agree-tos --no-redirect -d $dns
 cat > /etc/nginx/sites-available/CTFd <<EOL
 proxy_cache_path /home/CTFd/nginxCache levels=1:2 keys_zone=my_cache:10m max_size=8g
@@ -237,8 +237,8 @@ echo -e "PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin" >> $
 EOL
 
 chmod +x cron.sh && ./cron.sh;
-#nohup /home/CTFd/CTFd/start.sh
-#sleep 10
+nohup /home/CTFd/CTFd/start.sh
+sleep 10
 nohup /home/CTFd/CTFd/start.sh &
 echo "########################################################################"
 echo "CTFd is ready without a Domain"
