@@ -26,7 +26,7 @@ git clone https://github.com/CTFd/CTFd.git
 cd CTFd
 
 apt-get update -qq
-apt-get install -q -y build-essential libffi-dev python3-dev python3-pip
+apt-get install -qq -y build-essential libffi-dev python3-dev python3-pip
 pip3 install -r requirements.in
 
 #Uncomment if you want to edit the config file.
@@ -60,7 +60,7 @@ chmod +x start.sh
 
 function https {
 #Install nginx.
-apt-get -y install nginx;
+apt-get -qq -y install nginx;
 ufw allow 'Nginx Full';
 ufw allow 'Nginx HTTP';
 ufw allow 'Nginx HTTPS';
@@ -167,7 +167,7 @@ EOL
 nohup /home/CTFd/CTFd/start.sh
 sleep 10
 nohup /home/CTFd/CTFd/start.sh &
-apt-get install certbot python3-certbot-nginx -y;
+apt-get install -qq -y certbot python3-certbot-nginx;
 certbot --nginx --register-unsafely-without-email --agree-tos --no-redirect -d $dns
 cat > /etc/nginx/sites-available/CTFd <<EOL
 proxy_cache_path /home/CTFd/nginxCache levels=1:2 keys_zone=my_cache:10m max_size=8g
