@@ -13,9 +13,8 @@ fi
 
 function setup {
 #Perform updates
-#DEBIAN_FRONTEND=noninteractive
-add-apt-repository universe
 apt-get update -qq
+apt-get install -qq -y build-essential git ufw libffi-dev python3-dev python3-pip
 
 #Setup CTFd home.
 mkdir /home/CTFd;
@@ -24,9 +23,6 @@ cd /home/CTFd;
 #Get CTFd.
 git clone https://github.com/CTFd/CTFd.git
 cd CTFd
-
-apt-get update -qq
-apt-get install -qq -y build-essential libffi-dev python3-dev python3-pip
 pip3 install -r requirements.in
 
 #Uncomment if you want to edit the config file.
@@ -240,8 +236,8 @@ echo -e "PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin" >> $
 EOL
 
 chmod +x cron.sh && ./cron.sh;
-nohup /home/CTFd/CTFd/start.sh
-sleep 10
+#nohup /home/CTFd/CTFd/start.sh
+#sleep 10
 nohup /home/CTFd/CTFd/start.sh &
 echo "########################################################################"
 echo "CTFd is ready without a Domain"
