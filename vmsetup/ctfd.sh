@@ -161,8 +161,8 @@ EOL
 
 
 #Install certbot.
-nohup /home/CTFd/CTFd/start.sh
-sleep 10
+#nohup /home/CTFd/CTFd/start.sh
+#sleep 10
 nohup /home/CTFd/CTFd/start.sh &
 apt-get install -qq -y certbot python3-certbot-nginx
 certbot --nginx --register-unsafely-without-email --agree-tos --no-redirect -d $dns
@@ -237,8 +237,8 @@ echo -e "PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin" >> $
 EOL
 
 chmod +x cron.sh && ./cron.sh;
-nohup /home/CTFd/CTFd/start.sh
-sleep 10
+#nohup /home/CTFd/CTFd/start.sh
+#sleep 10
 nohup /home/CTFd/CTFd/start.sh &
 echo "########################################################################"
 echo "CTFd is ready without a Domain"
