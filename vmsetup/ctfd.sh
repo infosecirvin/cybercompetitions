@@ -14,8 +14,8 @@ fi
 function setup {
 #Perform updates
 DEBIAN_FRONTEND=noninteractive
-add-apt-repository universe
-apt-get update
+add-apt-repository universe -qq
+apt-get update -qq
 
 #Setup CTFd home.
 mkdir /home/CTFd;
@@ -26,7 +26,7 @@ git clone https://github.com/CTFd/CTFd.git
 cd CTFd
 
 apt-get update
-apt-get install -y build-essential python-dev python-pip libffi-dev python3 python3-pip
+apt-get install -qq -y build-essential libffi-dev python3-dev python3-pip
 pip3 install -r requirements.in
 
 #Uncomment if you want to edit the config file.
